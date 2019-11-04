@@ -1,0 +1,11 @@
+$PRIMARY_COLOR : rgb(243,103,126);
+
+body{
+    font-family :'Roboto', sans-serig;
+
+    h1 {
+        text-align:center;
+        color:$PRIMARY_COLOR;
+        font-weight:400;
+    }
+}
