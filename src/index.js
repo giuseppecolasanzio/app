@@ -4,17 +4,21 @@ import '../styles/index.scss';
 //import './lib/keyListener.js';
 import Container from "./component/container";
 
+
+
 const containerStyle = {
     width: "600px",
-    height: "50px"
+    height: "400px"
 };
-
-const containerSize = 600;
+const containerSize = {
+    width: 600,
+    height: 400
+}
 
 const App = () =>(
     <div>
         <h1>Hello world!!!!!!!!!!!!!!!!!!!!!!!!!!</h1>
-        <Container size={containerSize} style={containerStyle}/>
+        <Container size={containerSize} style={containerStyle} />
     </div>
 );
 

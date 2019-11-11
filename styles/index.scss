@@ -16,10 +16,13 @@ body{
     }
 
     .item {
-        position: fixed;
+        position: relative;
         border: 2px solid blue;
         width: 10px;
         height: 20px;
     }
 
+    .itemBar {
+        width: 100%;
+    }
 }
