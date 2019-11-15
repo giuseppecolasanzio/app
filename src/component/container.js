@@ -1,6 +1,7 @@
 import React from 'react';
 import Item from "./item";
 import produce from "immer";
+import inside from "point-in-polygon";
 
 class Container extends React.Component {
 
@@ -11,13 +12,15 @@ class Container extends React.Component {
         this.state = {
             value: null,
             bullets: [],
-            item : {
+            enemies: [],
+            item: {
                 x: x,
                 y: y
             }
         };
 
         this.clockTimer = setInterval(() => this.clock(), 20);
+        this.attackTimer = setInterval(() => this.attack(), 2000);
 
         document.addEventListener('keydown', (e) => {
             if (e.code === "ArrowRight") this.move(10)
@@ -27,11 +30,24 @@ class Container extends React.Component {
         document.addEventListener('keyup', (e) => {
             if (e.code === "Space") this.shot();
         });
+/*
+        var polygon = [[1, 1], [1, 2], [2, 2], [2, 1]];
 
+        console.dir([
+            inside([1.5, 1.5], polygon),
+            inside([4.9, 1.2], polygon),
+            inside([1.8, 1.1], polygon)
+        ]);
+*/
+    }
+
+    componentDidMount() {
+        this.enemyDimension = {width:30, height:3};
     }
 
     componentWillUnmount(){
         clearInterval(this.clockTimer);
+        clearInterval(this.attackTimer);
     }
 
     shot(){
@@ -47,6 +63,15 @@ class Container extends React.Component {
 
     }
 
+    attack(){
+        let x = Math.floor(Math.random() * (this.props.size.width - this.enemyDimension.width));
+        let y = 5;
+        let newEnemies = produce(this.state.enemies, draftEnemies => {
+            draftEnemies.push({x,y});
+        });
+        this.setState({enemies: newEnemies});
+    }
+
     move(delta){
       let nextPosition = this.state.item.x + delta;
       if (nextPosition >= 0 && nextPosition < this.props.size.width) {
@@ -60,17 +85,33 @@ class Container extends React.Component {
     };
 
     clock(){
-        let newBullets = produce(this.state.bullets.filter(b => b.y > 0), draftBullets => {
+        let newBullets = produce(this.state.bullets, draftBullets => {
                 draftBullets.map(b => b.y -= 5);
             });
+        this.setState({ bullets: newBullets.filter(b => b.y > 0) });
 
-        this.setState({ bullets: newBullets });
+        let newEnemies = produce(this.state.enemies, draftEnemies => {
+                draftEnemies.map(e => e.y += 1);
+            });
 
+        let enemies = newEnemies.filter(e => e.y < (this.props.size.height - 20));
+        if (newEnemies.length - enemies.length > 0){
+            clearInterval(this.clockTimer);
+            clearInterval(this.attackTimer);
+            alert('hai perso');
+        }
+
+        this.setState({enemies: enemies});
     }
 
     render(){
         return(
             <div className='container' style={this.props.style}>
+
+                {this.state.enemies.map(
+                    (enemy) =>
+                        <div key={`${enemy.x}x${enemy.y}`} className={'enemy'} style={{left : `${enemy.x}px`, top: `${enemy.y}px`, width:`${this.enemyDimension.width}px`, height:`${this.enemyDimension.height}px`}}/>
+                )}
 
                 {this.state.bullets.map(
                     (bullet) =>

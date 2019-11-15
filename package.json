@@ -12,6 +12,7 @@
   "license": "ISC",
   "dependencies": {
     "immer": "^5.0.0",
+    "point-in-polygon": "^1.0.1",
     "react": "^16.11.0",
     "react-dom": "^16.11.0"
   },

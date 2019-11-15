@@ -13,6 +13,7 @@ body{
         border: 1px solid red;
         display: block;
         position: fixed;
+        left:30px;
     }
 
     .item {
@@ -28,5 +29,10 @@ body{
 
     .bullet {
         position: absolute;
+    }
+
+    .enemy {
+        position : absolute;
+        background-color: red;
     }
 }
