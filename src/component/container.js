@@ -1,5 +1,7 @@
 import React from 'react';
 import Item from "./item";
+import Bullet from "./bullet";
+
 import produce from "immer";
 import inside from "point-in-polygon";
 
@@ -85,17 +87,37 @@ class Container extends React.Component {
     };
 
     clock(){
-        let newBullets = produce(this.state.bullets, draftBullets => {
+        const newBullets = produce(this.state.bullets, draftBullets => {
                 draftBullets.map(b => b.y -= 5);
             });
         this.setState({ bullets: newBullets.filter(b => b.y > 0) });
 
-        let newEnemies = produce(this.state.enemies, draftEnemies => {
+        const newEnemies = produce(this.state.enemies, draftEnemies => {
                 draftEnemies.map(e => e.y += 1);
             });
 
-        let enemies = newEnemies.filter(e => e.y < (this.props.size.height - 20));
-        if (newEnemies.length - enemies.length > 0){
+        const withoutFiredEnemy = produce(newEnemies, draftEnemies => (
+            draftEnemies.filter(e => {
+                let match = true;
+
+                this.state.bullets.some(b => {
+                    if (inside(
+                        [b.x, b.y],
+                        [[e.x, e.y - 20], [e.x + this.enemyDimension.width, e.y - 20], [e.x, e.y - this.enemyDimension.height], [e.x + this.enemyDimension.width, e.y - this.enemyDimension.height]]
+                    )
+                    ) {
+                        match = false;
+                    }
+                });
+
+                console.log(match);
+                return match;
+            })
+        ));
+        
+        const enemies = withoutFiredEnemy.filter(e => e.y < (this.props.size.height - 20));
+
+        if (withoutFiredEnemy.length - enemies.length > 0){
             clearInterval(this.clockTimer);
             clearInterval(this.attackTimer);
             alert('hai perso');
@@ -115,8 +137,9 @@ class Container extends React.Component {
 
                 {this.state.bullets.map(
                     (bullet) =>
-                        <div key={`${bullet.x}x${bullet.y}`} className={'bullet'} style={{left : `${bullet.x}px`, top: `${bullet.y}px`}}>0</div>
+                        <Bullet key={`${bullet.x}x${bullet.y}`}  x={bullet.x} y={bullet.y} />
                 )}
+
 
                 <Item position={this.state.item}/>
             </div>
