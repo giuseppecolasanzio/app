@@ -17,7 +17,7 @@ const containerSize = {
 
 const App = () =>(
     <div>
-        <h1>Hello world!!!!!!!!!!!!!!!!!!!!!!!!!!</h1>
+        <h1>press S for start !!!</h1>
         <Container size={containerSize} style={containerStyle} />
     </div>
 );

@@ -18,29 +18,31 @@ class Container extends React.Component {
             item: {
                 x: x,
                 y: y
-            }
+            },
+            score: 0
         };
 
-        this.clockTimer = setInterval(() => this.clock(), 20);
-        this.attackTimer = setInterval(() => this.attack(), 2000);
+        this.keys = {};
+        const listener = (e) => {
+            this.keys[e.code] = e.type == 'keydown'
+        };
 
-        document.addEventListener('keydown', (e) => {
-            if (e.code === "ArrowRight") this.move(10)
-            else if (e.code === "ArrowLeft") this.move(-10)
+        document.addEventListener('keydown', listener);
+        document.addEventListener('keyup', listener);
+
+        this.moveAndShotTimer = setInterval( () => {
+            if (this.keys['ArrowRight']) this.move(10);
+            if (this.keys['ArrowLeft']) this.move(-10);
+            if (this.keys['Space']) this.shot();},
+            50);
+
+        document.addEventListener('keydown', (e) =>{
+           if  (e.code === "KeyS") {
+               this.clockTimer = setInterval(() => this.clock(), 20);
+               this.attackTimer = setInterval(() => this.attack(), 2000);
+           }
         });
 
-        document.addEventListener('keyup', (e) => {
-            if (e.code === "Space") this.shot();
-        });
-/*
-        var polygon = [[1, 1], [1, 2], [2, 2], [2, 1]];
-
-        console.dir([
-            inside([1.5, 1.5], polygon),
-            inside([4.9, 1.2], polygon),
-            inside([1.8, 1.1], polygon)
-        ]);
-*/
     }
 
     componentDidMount() {
@@ -50,6 +52,7 @@ class Container extends React.Component {
     componentWillUnmount(){
         clearInterval(this.clockTimer);
         clearInterval(this.attackTimer);
+        clearInterval(this.moveAndShotTimer);
     }
 
     shot(){
@@ -87,6 +90,7 @@ class Container extends React.Component {
     };
 
     clock(){
+
         const newBullets = produce(this.state.bullets, draftBullets => {
                 draftBullets.map(b => b.y -= 5);
             });
@@ -96,28 +100,32 @@ class Container extends React.Component {
                 draftEnemies.map(e => e.y += 1);
             });
 
-        const withoutFiredEnemy = produce(newEnemies, draftEnemies => (
+        const withoutStrockedEnemies = produce(newEnemies, draftEnemies => (
             draftEnemies.filter(e => {
                 let match = true;
-
                 this.state.bullets.some(b => {
                     if (inside(
                         [b.x, b.y],
                         [[e.x, e.y - 20], [e.x + this.enemyDimension.width, e.y - 20], [e.x, e.y - this.enemyDimension.height], [e.x + this.enemyDimension.width, e.y - this.enemyDimension.height]]
                     )
                     ) {
+                        console.log(b);
                         match = false;
                     }
                 });
-
-                console.log(match);
                 return match;
             })
         ));
-        
-        const enemies = withoutFiredEnemy.filter(e => e.y < (this.props.size.height - 20));
 
-        if (withoutFiredEnemy.length - enemies.length > 0){
+
+        const stockedEnemies = newEnemies.length -withoutStrockedEnemies.length;
+        if(stockedEnemies > 0){
+            this.setState({score : this.state.score + stockedEnemies});
+        }
+
+        const enemies = withoutStrockedEnemies.filter(e => e.y < (this.props.size.height - 20));
+
+        if (withoutStrockedEnemies.length - enemies.length > 0){
             clearInterval(this.clockTimer);
             clearInterval(this.attackTimer);
             alert('hai perso');
@@ -128,7 +136,9 @@ class Container extends React.Component {
 
     render(){
         return(
+
             <div className='container' style={this.props.style}>
+                <div className={'score'}>{this.state.score}</div>
 
                 {this.state.enemies.map(
                     (enemy) =>
