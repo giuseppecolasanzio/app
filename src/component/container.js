@@ -30,11 +30,15 @@ class Container extends React.Component {
         document.addEventListener('keydown', listener);
         document.addEventListener('keyup', listener);
 
-        this.moveAndShotTimer = setInterval( () => {
+        this.moveTimer = setInterval( () => {
             if (this.keys['ArrowRight']) this.move(10);
             if (this.keys['ArrowLeft']) this.move(-10);
-            if (this.keys['Space']) this.shot();},
+            },
             50);
+
+        this.shotTimer = setInterval(()=> {
+            if (this.keys['Space']) this.shot();
+        },100);
 
         document.addEventListener('keydown', (e) =>{
            if  (e.code === "KeyS") {
@@ -52,12 +56,13 @@ class Container extends React.Component {
     componentWillUnmount(){
         clearInterval(this.clockTimer);
         clearInterval(this.attackTimer);
-        clearInterval(this.moveAndShotTimer);
+        clearInterval(this.shotTimer);
+        clearInterval(this.moveTimer);
     }
 
     shot(){
 
-        let startX = this.state.item.x;
+        let startX = this.state.item.x + 5;
         let startY = this.state.item.y;
 
         let newBullets = produce(this.state.bullets, draftBullets =>{
@@ -100,32 +105,33 @@ class Container extends React.Component {
                 draftEnemies.map(e => e.y += 1);
             });
 
-        const withoutStrockedEnemies = produce(newEnemies, draftEnemies => (
+        const enemiesNoStroked = produce(newEnemies, draftEnemies => (
             draftEnemies.filter(e => {
                 let match = true;
-                this.state.bullets.some(b => {
-                    if (inside(
-                        [b.x, b.y],
-                        [[e.x, e.y - 20], [e.x + this.enemyDimension.width, e.y - 20], [e.x, e.y - this.enemyDimension.height], [e.x + this.enemyDimension.width, e.y - this.enemyDimension.height]]
-                    )
-                    ) {
-                        console.log(b);
+
+                let i = this.state.bullets.length;
+                while (i--){
+                    let b = this.state.bullets[i];
+                    if ( this.isEnemyStruck(e,b) ) {
+                        this.setState({bullets : this.bulletRemover(i)});
+                        i = false;
                         match = false;
                     }
-                });
+                }
+
                 return match;
             })
         ));
 
 
-        const stockedEnemies = newEnemies.length -withoutStrockedEnemies.length;
+        const stockedEnemies = newEnemies.length -enemiesNoStroked.length;
         if(stockedEnemies > 0){
             this.setState({score : this.state.score + stockedEnemies});
         }
 
-        const enemies = withoutStrockedEnemies.filter(e => e.y < (this.props.size.height - 20));
+        const enemies = enemiesNoStroked.filter(e => e.y < (this.props.size.height - 20));
 
-        if (withoutStrockedEnemies.length - enemies.length > 0){
+        if (enemiesNoStroked.length - enemies.length > 0){
             clearInterval(this.clockTimer);
             clearInterval(this.attackTimer);
             alert('hai perso');
@@ -134,11 +140,25 @@ class Container extends React.Component {
         this.setState({enemies: enemies});
     }
 
+    bulletRemover(bulletIndex){
+         return produce(this.state.bullets, bullets => {
+                bullets.splice(bulletIndex,1);
+                return bullets;
+            } );
+    }
+
+    isEnemyStruck(enemy, bullet){
+        return inside(
+            [bullet.x, bullet.y],
+            [[enemy.x, enemy.y - 30], [enemy.x + this.enemyDimension.width, enemy.y - 30], [enemy.x, enemy.y - this.enemyDimension.height], [enemy.x + this.enemyDimension.width, enemy.y - this.enemyDimension.height]]
+        );
+    }
+
     render(){
         return(
 
             <div className='container' style={this.props.style}>
-                <div className={'score'}>{this.state.score}</div>
+                <div className={'score'}>score: {this.state.score}</div>
 
                 {this.state.enemies.map(
                     (enemy) =>
