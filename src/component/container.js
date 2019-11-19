@@ -23,12 +23,12 @@ class Container extends React.Component {
         };
 
         this.keys = {};
-        const listener = (e) => {
-            this.keys[e.code] = e.type == 'keydown'
+        const keyListener = (e) => {
+            this.keys[e.code] = e.type === 'keydown'
         };
 
-        document.addEventListener('keydown', listener);
-        document.addEventListener('keyup', listener);
+        document.addEventListener('keydown', keyListener);
+        document.addEventListener('keyup', keyListener);
 
         this.moveTimer = setInterval( () => {
             if (this.keys['ArrowRight']) this.move(10);
@@ -124,7 +124,7 @@ class Container extends React.Component {
         ));
 
 
-        const stockedEnemies = newEnemies.length -enemiesNoStroked.length;
+        const stockedEnemies = newEnemies.length - enemiesNoStroked.length;
         if(stockedEnemies > 0){
             this.setState({score : this.state.score + stockedEnemies});
         }
