@@ -162,7 +162,7 @@ class Container extends React.Component {
 
                 {this.state.enemies.map(
                     (enemy) =>
-                        <div key={`${enemy.x}x${enemy.y}`} className={'enemy'} style={{left : `${enemy.x}px`, top: `${enemy.y}px`, width:`${this.enemyDimension.width}px`, height:`${this.enemyDimension.height}px`}}/>
+                        <div key={`${enemy.x}x${enemy.y}`} className={'enemy'} style={{transform : `translate3d(${enemy.x}px, ${enemy.y}px, 0)`, width:`${this.enemyDimension.width}px`, height:`${this.enemyDimension.height}px`}}/>
                 )}
 
                 {this.state.bullets.map(
