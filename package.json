@@ -4,6 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist",
     "start": "webpack-dev-server --mode development --open --hot",
     "build": "webpack --mode production",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -11,6 +13,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "gh-pages": "^2.1.1",
+    "gh-pages-webpack-plugin": "^1.0.2",
+    "ghpages-spa-webpack-plugin": "^1.0.0",
     "immer": "^5.0.0",
     "point-in-polygon": "^1.0.1",
     "react": "^16.11.0",
@@ -31,5 +36,6 @@
     "webpack": "^4.41.2",
     "webpack-cli": "^3.3.10",
     "webpack-dev-server": "^3.9.0"
-  }
+  },
+  "homepage": "https://giuseppecolasanzio.github.io/app"
 }

@@ -1,7 +1,7 @@
-const HTMLWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
 const HWP = require('html-webpack-plugin');
 const {HotModuleReplacementPlugin} = require('webpack');
+const GHPagesSPAWebpackPlugin = require('ghpages-spa-webpack-plugin');
 
 module.exports = {
    entry: path.join(__dirname, '/src/index.js'),
