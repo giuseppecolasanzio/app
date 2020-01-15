@@ -1,11 +1,20 @@
 import React from 'react';
+import {connect} from 'react-redux';
 import Item from "./item";
 import Bullet from "./bullet";
 
 import produce from "immer";
 import inside from "point-in-polygon";
 
+function mapStateToProps(state){
+    return {
+        score : state.score
+    }
+};
+
 class Container extends React.Component {
+
+
 
     constructor(props) {
         super(props);
@@ -18,8 +27,7 @@ class Container extends React.Component {
             item: {
                 x: x,
                 y: y
-            },
-            score: 0
+            }
         };
 
         this.keys = {};
@@ -126,7 +134,7 @@ class Container extends React.Component {
 
         const stockedEnemies = newEnemies.length - enemiesNoStroked.length;
         if(stockedEnemies > 0){
-            this.setState({score : this.state.score + stockedEnemies});
+            this.props.dispatch({type:'SCORE'});
         }
 
         const enemies = enemiesNoStroked.filter(e => e.y < (this.props.size.height - 20));
@@ -158,7 +166,7 @@ class Container extends React.Component {
         return(
 
             <div className='container' style={this.props.style}>
-                <div className={'score'}>score: {this.state.score}</div>
+                <div className={'score'}>score: {this.props.score}</div>
 
                 {this.state.enemies.map(
                     (enemy) =>
@@ -177,4 +185,4 @@ class Container extends React.Component {
     };
 }
 
-export default Container;
+export default connect(mapStateToProps)(Container);

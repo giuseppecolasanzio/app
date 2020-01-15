@@ -1,29 +1,61 @@
+import config from '../config/config';
+import '../styles/index.scss';
+
+import produce from "immer";
+
 import React from 'react';
 import ReactDOM from 'react-dom';
-import '../styles/index.scss';
-//import './lib/keyListener.js';
+
+import { Provider } from 'react-redux';
+import { createStore } from 'redux';
+
 import Container from "./component/container";
 
 
-
-const containerStyle = {
-    width: "600px",
-    height: "400px"
+const initialState = {
+        score:0,
+        item: {
+            x: 300,
+            y: 380
+        }
 };
-const containerSize = {
-    width: 600,
-    height: 400
+
+function reducer (state = initialState, action){
+        switch(action.type){
+            case 'MOVE':
+                let nextPosition = state.item.x + action.item;
+                if (nextPosition >= 0 && nextPosition < config.containerSize.width) {
+                    const nextState = produce(state, draftState => {
+                        draftState.item.x = nextPosition;
+                    })
+                    return nextState;
+                }
+            case 'SCORE':
+
+                return produce(state, draftState => {
+                   draftState.score ++;
+                });
+        }
+    return state;
 }
 
+const store = createStore(reducer);
+store.dispatch({type: 'MOVE'});
+store.dispatch({type: 'SCORE'});
+
+
 const App = () =>(
-    <div>
-        <h1>press S for start !!!</h1>
-        <Container size={containerSize} style={containerStyle} />
-    </div>
+    <Provider store={store}>
+        <div>
+            <h1>press S for start !!!</h1>
+            <Container size={config.containerSize} style={config.containerStyle} />
+        </div>
+    </Provider>
 );
 
 ReactDOM.render(
-    <App/>,
+    <App/>
+    ,
     document.getElementById('root')
 );
 
