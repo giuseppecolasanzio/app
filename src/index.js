@@ -21,21 +21,20 @@ const initialState = {
 };
 
 function reducer (state = initialState, action){
-        switch(action.type){
-            case 'MOVE':
-                let nextPosition = state.item.x + action.item;
-                if (nextPosition >= 0 && nextPosition < config.containerSize.width) {
-                    const nextState = produce(state, draftState => {
-                        draftState.item.x = nextPosition;
-                    })
-                    return nextState;
-                }
-            case 'SCORE':
-
+    console.log(state.item.x);
+    switch(action.type){
+        case 'MOVE':
+            let nextPosition = state.item.x + action.payload;
+            if (nextPosition >= 0 && nextPosition < config.containerSize.width) {
                 return produce(state, draftState => {
-                   draftState.score ++;
+                    draftState.item.x = nextPosition;
                 });
-        }
+            }
+        case 'SCORE':
+            return produce(state, draftState => {
+               draftState.score ++;
+            });
+    }
     return state;
 }
 
