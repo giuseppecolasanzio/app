@@ -10,6 +10,10 @@ const config = {
     enemyDimension : {
         width:30,
         height:3
+    },
+    game : {
+        clock : 20,
+        attackClock : 2000
     }
 }
 
