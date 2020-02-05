@@ -6,6 +6,10 @@ const config = {
      containerSize : {
         width: 600,
         height: 400
+    },
+    enemyDimension : {
+        width:30,
+        height:3
     }
 }
 

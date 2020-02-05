@@ -8,13 +8,13 @@ import inside from "point-in-polygon";
 
 function mapStateToProps(state){
     return {
-        score : state.score
+        score : state.score,
+        bullets : state.bullets,
+        enemies : state.enemies
     }
 };
 
 class Container extends React.Component {
-
-
 
     constructor(props) {
         super(props);
@@ -22,39 +22,20 @@ class Container extends React.Component {
         let y = props.size.height - 20;
         this.state = {
             value: null,
-            bullets: [],
-            enemies: [],
+            //enemies: [],
             item: {
                 x: x,
                 y: y
             }
         };
-
-        this.keys = {};
-        const keyListener = (e) => {
-            this.keys[e.code] = e.type === 'keydown'
-        };
-
-        document.addEventListener('keydown', keyListener);
-        document.addEventListener('keyup', keyListener);
-
-        this.moveTimer = setInterval( () => {
-            if (this.keys['ArrowRight']) this.move(10);
-            if (this.keys['ArrowLeft']) this.move(-10);
-            },
-            50);
-
-        this.shotTimer = setInterval(()=> {
-            if (this.keys['Space']) this.shot();
-        },100);
-
+/*
         document.addEventListener('keydown', (e) =>{
            if  (e.code === "KeyS") {
                this.clockTimer = setInterval(() => this.clock(), 20);
                this.attackTimer = setInterval(() => this.attack(), 2000);
            }
         });
-
+*/
     }
 
     componentDidMount() {
@@ -63,44 +44,8 @@ class Container extends React.Component {
 
     componentWillUnmount(){
         clearInterval(this.clockTimer);
-        clearInterval(this.attackTimer);
-        clearInterval(this.shotTimer);
-        clearInterval(this.moveTimer);
     }
 
-    shot(){
-
-        let startX = this.state.item.x + 5;
-        let startY = this.state.item.y;
-
-        let newBullets = produce(this.state.bullets, draftBullets =>{
-            draftBullets.push({x:startX, y:startY});
-        });
-
-        this.setState({bullets: newBullets});
-
-    }
-
-    attack(){
-        let x = Math.floor(Math.random() * (this.props.size.width - this.enemyDimension.width));
-        let y = 5;
-        let newEnemies = produce(this.state.enemies, draftEnemies => {
-            draftEnemies.push({x,y});
-        });
-        this.setState({enemies: newEnemies});
-    }
-
-    move(delta){
-      let nextPosition = this.state.item.x + delta;
-      if (nextPosition >= 0 && nextPosition < this.props.size.width) {
-
-          let newItem = produce(this.state.item, draftItem => {
-              draftItem.x = nextPosition;
-          });
-          this.setState({item: newItem});
-
-      }
-    };
 
     clock(){
 
@@ -168,18 +113,17 @@ class Container extends React.Component {
             <div className='container' style={this.props.style}>
                 <div className={'score'}>score: {this.props.score}</div>
 
-                {this.state.enemies.map(
+                {this.props.enemies.map(
                     (enemy) =>
                         <div key={`${enemy.x}x${enemy.y}`} className={'enemy'} style={{transform : `translate3d(${enemy.x}px, ${enemy.y}px, 0)`, width:`${this.enemyDimension.width}px`, height:`${this.enemyDimension.height}px`}}/>
                 )}
 
-                {this.state.bullets.map(
+                {this.props.bullets.map(
                     (bullet) =>
                         <Bullet key={`${bullet.x}x${bullet.y}`}  x={bullet.x} y={bullet.y} />
                 )}
 
-
-                <Item position={this.state.item}/>
+                <Item />
             </div>
         )
     };
