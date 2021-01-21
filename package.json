@@ -16,7 +16,7 @@
     "gh-pages": "^2.1.1",
     "gh-pages-webpack-plugin": "^1.0.2",
     "ghpages-spa-webpack-plugin": "^1.0.0",
-    "immer": "^5.0.0",
+    "immer": "^8.0.1",
     "point-in-polygon": "^1.0.1",
     "react": "^16.11.0",
     "react-dom": "^16.11.0"
